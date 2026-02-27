@@ -1,0 +1,70 @@
+defaults:
+  - model: simple_model
+  - optimizer: adam
+  - loss: mse
+  - _self_
+
+mlflow:
+  tracking_uri: ${oc.env:MLFLOW_TRACKING_URI, http://127.0.0.1:5500}
+
+  artifacts:
+    dir: ${oc.env:PROJECT_ROOT}/artifacts
+
+  # artifacts:
+  #   dir: "wasbs://experiments@${oc.env:AZURE_STORAGE_ACCOUNT}.blob.core.windows.net/mlflow-artifacts"
+
+
+data:
+
+  train: 
+    dataset_path: /Users/alexdelapuente/Desktop/h5vectorized/tr
+    fraction: 0.5
+    features_info: false
+    neighbours_info: false
+    ref_info: true
+    batch_size: 512
+    shuffle: true
+    num_workers: 8
+  
+  val: 
+    dataset_path: /Users/alexdelapuente/Desktop/h5vectorized/vl
+    fraction: 0.5
+    features_info: false
+    neighbours_info: false
+    ref_info: true
+    batch_size: 512
+    shuffle: true
+    num_workers: 8
+
+
+# logging:
+#   experiment_name: fabad_fabric
+#   run_name: ${model.name}_${now:%Y-%m-%d_%H-%M-%S}
+
+training:
+  batch_size: 512
+  epochs: 50
+  random_seed: 47  
+  device: mps
+
+callbacks:
+
+  early_stopping:
+    patience: 10 #200 # 30-50 para el latent
+    monitor: val_loss
+    mode: min
+    min_delta: 1e-6
+    start_from_epoch: 30 #30 # 100
+    
+  model_checkpoint:
+    monitor: val_loss
+    mode: min
+    min_delta: 1e-3
+    start_from_epoch: 0 #30 # 100
+
+  # reduce_lr_on_plateau:
+  #   factor: 0.7       
+  #   patience: 30 #12    # 30
+  #   min_lr: 1e-6      
+  #   mode: min         
+  #   metric: val_loss  
