@@ -7,14 +7,14 @@ from dotenv import load_dotenv
 from torch.utils.data import DataLoader
 import mlflow
 from omegaconf import OmegaConf
-from itp_fabadII.utils import ConfigNamespace, flatten_dict
-from itp_fabadII.logger import logger
+from vaes.utils import ConfigNamespace, flatten_dict
+from vaes.logger import logger
 from tqdm import tqdm
 import sys
 from collections.abc import Mapping, Sequence
 
-from itp_fabadII.callbacks import Callback
-from itp_fabadII.utils.color_utils import bold_green, orange
+from vaes.callbacks import Callback
+from vaes.utils.color_utils import bold_green, orange
 
 class BasePipeline(ABC):
     """
@@ -106,8 +106,9 @@ class BasePipeline(ABC):
         self.artifacts_dir = Path(self.cfg.mlflow.artifacts.dir)
         self.artifacts_dir.mkdir(parents=True, exist_ok=True)
 
-        # Tracking URI
-        mlflow.set_tracking_uri(self.cfg.mlflow.artifacts.dir)
+        # Tracking URI — use SQLite backend (file store deprecated in MLflow 3+)
+        db_path = self.artifacts_dir / "mlflow.db"
+        mlflow.set_tracking_uri(f"sqlite:///{db_path}")
 
         # --- Resume logic ---
         # Check for a resume_training argument either at root or inside model
@@ -216,6 +217,8 @@ class BasePipeline(ABC):
     def init_callbacks(self) -> list[Callback]: ...
     
     def build_loss(self) -> torch.nn.Module:
+        from vaes.losses import VAELoss
+
         name = self.cfg.loss.name.lower()
         params = {k: v for k, v in self.cfg.loss.items() if k != "name"}
 
@@ -224,6 +227,7 @@ class BasePipeline(ABC):
             "l1": torch.nn.L1Loss,
             "bce": torch.nn.BCEWithLogitsLoss,
             "cross_entropy": torch.nn.CrossEntropyLoss,
+            "vae": VAELoss,
         }
 
         if name not in loss_classes:

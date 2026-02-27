@@ -12,7 +12,7 @@ import argparse
 from types import SimpleNamespace
 from collections.abc import MutableMapping
 
-from itp_fabadII.logger import logger
+from vaes.logger import logger
 
 class ConfigNamespace(SimpleNamespace, MutableMapping):
     """SimpleNamespace that also behaves like a dict."""

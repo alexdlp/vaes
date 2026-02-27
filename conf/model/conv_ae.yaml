@@ -1,0 +1,11 @@
+model:
+  name: mnist
+  arch: conv_ae
+
+  params:
+    in_channels: 1
+    channels_bottleneck: 4
+
+  experiment:
+    name: "ConvAE_B${model.params.channels_bottleneck}"
+    run_name: "conv_ae_B${model.params.channels_bottleneck}_${now:%H%M%S}"

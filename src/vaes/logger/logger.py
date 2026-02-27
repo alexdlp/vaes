@@ -3,7 +3,7 @@ from pathlib import Path
 from datetime import datetime
 
 # Nombre del logger global
-LOGGER_NAME = "itp_fabadII"
+LOGGER_NAME = "vaes"
 
 # Obtener el logger
 logger = logging.getLogger(LOGGER_NAME)

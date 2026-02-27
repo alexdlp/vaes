@@ -6,10 +6,10 @@ from typing import Dict, Optional, TYPE_CHECKING
 import torch
 import mlflow
 from pathlib import Path
-from itp_fabadII.logger import logger
+from vaes.logger import logger
 
 if TYPE_CHECKING:
-    from itp_fabadII.pipelines.base_pipeline import BasePipeline
+    from vaes.pipelines.base_pipeline import BasePipeline
 
 
 

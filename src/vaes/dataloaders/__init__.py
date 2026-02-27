@@ -1,2 +1,1 @@
-from .cubeh5dataloader import CubeDataLoader
-from .combh5dataloader import CombDataLoader
+from .mnist import create_mnist_dataloaders

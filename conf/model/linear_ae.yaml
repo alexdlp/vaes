@@ -1,0 +1,13 @@
+model:
+  name: mnist
+  arch: linear_ae
+
+  params:
+    input_dim: 1024
+    hidden_dims: [128, 64]
+    latent_dim: 2
+    image_shape: [1, 32, 32]
+
+  experiment:
+    name: "LinearAE_L${model.params.latent_dim}"
+    run_name: "linear_ae_L${model.params.latent_dim}_${now:%H%M%S}"
