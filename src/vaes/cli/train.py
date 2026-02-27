@@ -1,8 +1,8 @@
 from omegaconf import DictConfig
-from itp_fabadII.logger import logger
-from itp_fabadII.pipelines import create_pipeline
-from itp_fabadII.utils import clean_up, merge_model_section
-from itp_fabadII.utils.config_utils import load_environment, parse_args, export_args_to_env, load_hydra_config
+from vaes.logger import logger
+from vaes.pipelines import create_pipeline
+from vaes.utils import merge_model_section
+from vaes.utils.config_utils import load_environment, parse_args, export_args_to_env, load_hydra_config
 
 # @hydra.main(config_path=str(Path(__file__).resolve().parents[3] / "conf"), 
 #             config_name="config", version_base=None)
@@ -19,7 +19,7 @@ def run_training_pipeline(cfg: DictConfig):
     except Exception as ex:
         logger.error(f"❌ Exception occurred: {ex}", exc_info=True)
     finally:
-        clean_up()
+        pass
 
 
 def main():

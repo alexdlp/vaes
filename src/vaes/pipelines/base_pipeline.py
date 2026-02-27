@@ -7,14 +7,15 @@ from dotenv import load_dotenv
 from torch.utils.data import DataLoader
 import mlflow
 from omegaconf import OmegaConf
-from itp_fabadII.utils import ConfigNamespace, flatten_dict
-from itp_fabadII.logger import logger
+from vaes.utils import ConfigNamespace, flatten_dict
+from vaes.logger import logger
 from tqdm import tqdm
 import sys
 from collections.abc import Mapping, Sequence
 
-from itp_fabadII.callbacks import Callback
-from itp_fabadII.utils.color_utils import bold_green, orange
+from vaes.callbacks import Callback
+from vaes.losses import VAELoss
+from vaes.utils.color_utils import bold_green, orange
 
 class BasePipeline(ABC):
     """
@@ -107,7 +108,7 @@ class BasePipeline(ABC):
         self.artifacts_dir.mkdir(parents=True, exist_ok=True)
 
         # Tracking URI
-        mlflow.set_tracking_uri(self.cfg.mlflow.artifacts.dir)
+        mlflow.set_tracking_uri(self.cfg.mlflow.tracking_uri)
 
         # --- Resume logic ---
         # Check for a resume_training argument either at root or inside model
@@ -224,6 +225,7 @@ class BasePipeline(ABC):
             "l1": torch.nn.L1Loss,
             "bce": torch.nn.BCEWithLogitsLoss,
             "cross_entropy": torch.nn.CrossEntropyLoss,
+            "vae_loss": VAELoss,
         }
 
         if name not in loss_classes:

@@ -1,14 +1,18 @@
-defaults:
-  - model: linear_ae
-  - optimizer: adam
-  - loss: mse
-  - _self_
+model:
+  name: conv_vae
 
-mlflow:
-  tracking_uri: ${oc.env:MLFLOW_TRACKING_URI, file:${oc.env:PROJECT_ROOT}/artifacts}
+  params:
+    in_channels: 1
+    channels_bottleneck: 4
 
-  artifacts:
-    dir: ${oc.env:PROJECT_ROOT}/artifacts
+  experiment:
+    name: "ConvVAE_B${model.params.channels_bottleneck}"
+    run_name: "conv_vae_B${model.params.channels_bottleneck}_${now:%H%M%S}"
+
+loss:
+  name: vae_loss
+  kl_weight: 0.8
+  reconstruction_weight: 1.0
 
 data:
   train:
@@ -17,7 +21,6 @@ data:
     batch_size: 64
     shuffle: true
     num_workers: 4
-
   val:
     data_dir: ./data/mnist
     train: false
@@ -25,13 +28,11 @@ data:
     shuffle: false
     num_workers: 4
 
-training:
-  epochs: 50
-  random_seed: 47
-  device: mps
+optimizer:
+  name: adam
+  lr: 5e-4
 
 callbacks:
-
   early_stopping:
     patience: 10
     monitor: val_loss

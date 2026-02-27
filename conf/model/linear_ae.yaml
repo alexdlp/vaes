@@ -1,14 +1,12 @@
-defaults:
-  - model: linear_ae
-  - optimizer: adam
-  - loss: mse
-  - _self_
+model:
+  name: linear_ae
 
-mlflow:
-  tracking_uri: ${oc.env:MLFLOW_TRACKING_URI, file:${oc.env:PROJECT_ROOT}/artifacts}
+  params:
+    latent_dim: 2
 
-  artifacts:
-    dir: ${oc.env:PROJECT_ROOT}/artifacts
+  experiment:
+    name: "LinearAE_L${model.params.latent_dim}"
+    run_name: "linear_ae_L${model.params.latent_dim}_${now:%H%M%S}"
 
 data:
   train:
@@ -17,7 +15,6 @@ data:
     batch_size: 64
     shuffle: true
     num_workers: 4
-
   val:
     data_dir: ./data/mnist
     train: false
@@ -25,13 +22,11 @@ data:
     shuffle: false
     num_workers: 4
 
-training:
-  epochs: 50
-  random_seed: 47
-  device: mps
+optimizer:
+  name: adam
+  lr: 5e-4
 
 callbacks:
-
   early_stopping:
     patience: 10
     monitor: val_loss
