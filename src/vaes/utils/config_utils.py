@@ -237,6 +237,13 @@ def export_args_to_env(args: argparse.Namespace) -> None:
     """
     os.environ["FAST_DEV_RUN"] = "1" if args.fast_dev_run else "0"
 
+    # Avoid inheriting stale MLflow run context from the shell/session.
+    # Run resumption is controlled explicitly via --resume -> RESUME_RUN_ID.
+    for var in ("MLFLOW_RUN_ID", "MLFLOW_PARENT_RUN_ID"):
+        if var in os.environ:
+            logger.info(f"Clearing inherited environment variable: {var}")
+            os.environ.pop(var, None)
+
     if args.resume is not None:
         os.environ["RESUME_RUN_ID"] = args.resume
     else:
