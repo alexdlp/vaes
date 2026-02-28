@@ -21,14 +21,19 @@ fi
 # --- UV project environment ---
 UV_PYTHON="$PROJECT_DIR/.venv/bin/python"
 
-# --- Backend store URI (folder artifacts) ---
-BACKEND_URI="file:${PROJECT_DIR}/artifacts"
+# --- Tracking paths ---
+TRACKING_ROOT="$PROJECT_DIR/tracking"
+BACKEND_URI="${TRACKING_ROOT}/metadata"
+ARTIFACT_ROOT="file:${TRACKING_ROOT}/artifacts"
 
 # --- Check if required variables exist ---
 if [ -z "$MLFLOW_HOST" ] || [ -z "$MLFLOW_PORT" ] || [ -z "$MLFLOW_TRACKING_URI" ]; then
   echo "Error: MLFLOW_HOST, MLFLOW_PORT, or MLFLOW_TRACKING_URI not set in environment."
   exit 1
 fi
+
+# --- Ensure tracking directories exist ---
+mkdir -p "$TRACKING_ROOT/metadata" "$TRACKING_ROOT/artifacts"
 
 # --- Check if port is free ---
 if lsof -i :"$MLFLOW_PORT" &>/dev/null; then
@@ -45,6 +50,7 @@ else
     cd \"$PROJECT_DIR\" &&
     uv run --python \"$UV_PYTHON\" mlflow ui \
       --backend-store-uri \"$BACKEND_URI\" \
+      --default-artifact-root \"$ARTIFACT_ROOT\" \
       --host \"$MLFLOW_HOST\" \
       --port \"$MLFLOW_PORT\"
   '"

@@ -5,10 +5,10 @@ defaults:
   - _self_
 
 mlflow:
-  tracking_uri: ${oc.env:MLFLOW_TRACKING_URI, http://127.0.0.1:5500}
+  tracking_uri: ${oc.env:MLFLOW_TRACKING_URI, file:${oc.env:PROJECT_ROOT}/tracking/metadata}
 
   artifacts:
-    dir: ${oc.env:PROJECT_ROOT}/artifacts
+    dir: ${oc.env:PROJECT_ROOT}/tracking/artifacts
 
 data:
   train:
