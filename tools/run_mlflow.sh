@@ -18,9 +18,8 @@ else
   echo "Warning: .env not found. Environment variables must already be defined."
 fi
 
-# --- Python virtual environment path ---
-VENV_PATH="$PROJECT_DIR/.venv"
-MLFLOW_BIN="$VENV_PATH/bin/mlflow"
+# --- Conda environment path ---
+CONDA_ENV_PATH="$PROJECT_DIR/.venv"
 
 # --- Backend store URI (folder artifacts) ---
 BACKEND_URI="file:${PROJECT_DIR}/artifacts"
@@ -28,13 +27,6 @@ BACKEND_URI="file:${PROJECT_DIR}/artifacts"
 # --- Check if required variables exist ---
 if [ -z "$MLFLOW_HOST" ] || [ -z "$MLFLOW_PORT" ] || [ -z "$MLFLOW_TRACKING_URI" ]; then
   echo "Error: MLFLOW_HOST, MLFLOW_PORT, or MLFLOW_TRACKING_URI not set in environment."
-  exit 1
-fi
-
-# --- Check mlflow binary in local virtual environment ---
-if [ ! -x "$MLFLOW_BIN" ]; then
-  echo "Error: mlflow not found at $MLFLOW_BIN"
-  echo "Install dependencies in .venv first."
   exit 1
 fi
 
@@ -51,7 +43,9 @@ else
   echo "Starting MLflow UI on $MLFLOW_TRACKING_URI"
   tmux new-session -d -s "$SESSION_NAME" "bash -lc '
     cd \"$PROJECT_DIR\" &&
-    \"$MLFLOW_BIN\" ui \
+    source \"\$(conda info --base)/etc/profile.d/conda.sh\" &&
+    conda activate \"$CONDA_ENV_PATH\" &&
+    mlflow ui \
       --backend-store-uri \"$BACKEND_URI\" \
       --host \"$MLFLOW_HOST\" \
       --port \"$MLFLOW_PORT\"
