@@ -18,8 +18,8 @@ else
   echo "Warning: .env not found. Environment variables must already be defined."
 fi
 
-# --- Conda environment path ---
-CONDA_ENV_PATH="$PROJECT_DIR/.venv"
+# --- UV project environment ---
+UV_PYTHON="$PROJECT_DIR/.venv/bin/python"
 
 # --- Backend store URI (folder artifacts) ---
 BACKEND_URI="file:${PROJECT_DIR}/artifacts"
@@ -43,9 +43,7 @@ else
   echo "Starting MLflow UI on $MLFLOW_TRACKING_URI"
   tmux new-session -d -s "$SESSION_NAME" "bash -lc '
     cd \"$PROJECT_DIR\" &&
-    source \"\$(conda info --base)/etc/profile.d/conda.sh\" &&
-    conda activate \"$CONDA_ENV_PATH\" &&
-    mlflow ui \
+    uv run --python \"$UV_PYTHON\" mlflow ui \
       --backend-store-uri \"$BACKEND_URI\" \
       --host \"$MLFLOW_HOST\" \
       --port \"$MLFLOW_PORT\"
