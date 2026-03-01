@@ -13,6 +13,7 @@ dependencies = [
     "python-dotenv",
     "tqdm",
     "matplotlib",
+    "scikit-learn",
 ]
 
 [project.scripts]
