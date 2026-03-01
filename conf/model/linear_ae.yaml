@@ -39,3 +39,19 @@ callbacks:
     mode: min
     min_delta: 1e-3
     start_from_epoch: 0
+
+  reconstruction_viz:
+    plot_every_n_epochs: 10
+    n_samples: 8
+
+  latent_space_viz:
+    plot_every_n_epochs: 10
+    max_points: 2048
+
+  latent_interpolation_viz:
+    plot_every_n_epochs: 10
+    grid_size: 12
+
+  random_generation_viz:
+    plot_every_n_epochs: 10
+    n_samples: 16
