@@ -4,23 +4,7 @@ import math
 
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.axes import Axes
 from matplotlib.figure import Figure
-
-
-def _apply_grid(ax: Axes, hide_ticks: bool = True) -> None:
-    """Apply consistent grid styling across all plots."""
-    ax.grid(True, alpha=0.5)
-    if hide_ticks:
-        ax.tick_params(
-            axis="both",
-            which="both",
-            bottom=False,
-            left=False,
-            labelbottom=False,
-            labelleft=False,
-        )
-
 
 def plot_reconstruction_comparison(
     images: np.ndarray,
@@ -45,11 +29,27 @@ def plot_reconstruction_comparison(
 
     for idx in range(n):
         axes[0, idx].imshow(np.squeeze(images[idx]), cmap="gray")
-        _apply_grid(axes[0, idx], hide_ticks=True)
+        axes[0, idx].grid(True, alpha=0.5)
+        axes[0, idx].tick_params(
+            axis="both",
+            which="both",
+            bottom=False,
+            left=False,
+            labelbottom=False,
+            labelleft=False,
+        )
         axes[0, idx].set_title("Original")
 
         axes[1, idx].imshow(np.squeeze(reconstructions[idx]), cmap="gray")
-        _apply_grid(axes[1, idx], hide_ticks=True)
+        axes[1, idx].grid(True, alpha=0.5)
+        axes[1, idx].tick_params(
+            axis="both",
+            which="both",
+            bottom=False,
+            left=False,
+            labelbottom=False,
+            labelleft=False,
+        )
         axes[1, idx].set_title("Recon")
 
     fig.suptitle("Reconstruction Comparison", fontsize=12)
@@ -82,7 +82,7 @@ def plot_latent_scatter(
     ax.set_xlabel("x")
     ax.set_ylabel("y")
     ax.legend(loc="best", fontsize=7, ncol=2)
-    _apply_grid(ax, hide_ticks=False)
+    ax.grid(True, alpha=0.5)
     fig.tight_layout()
     return fig
 
@@ -103,7 +103,15 @@ def plot_latent_interpolation_grid(images: np.ndarray, grid_size: int) -> Figure
     for i in range(grid_size):
         for j in range(grid_size):
             axes[i, j].imshow(np.squeeze(images[idx]), cmap="gray")
-            _apply_grid(axes[i, j], hide_ticks=True)
+            axes[i, j].grid(True, alpha=0.5)
+            axes[i, j].tick_params(
+                axis="both",
+                which="both",
+                bottom=False,
+                left=False,
+                labelbottom=False,
+                labelleft=False,
+            )
             idx += 1
 
     fig.suptitle("Latent Space Interpolation", fontsize=12)
@@ -134,7 +142,15 @@ def plot_generated_samples(images: np.ndarray, max_samples: int = 16) -> Figure:
     idx = 0
     for r in range(rows):
         for c in range(cols):
-            _apply_grid(axes[r, c], hide_ticks=True)
+            axes[r, c].grid(True, alpha=0.5)
+            axes[r, c].tick_params(
+                axis="both",
+                which="both",
+                bottom=False,
+                left=False,
+                labelbottom=False,
+                labelleft=False,
+            )
             if idx < n:
                 axes[r, c].imshow(np.squeeze(images[idx]), cmap="gray")
             idx += 1
