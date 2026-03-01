@@ -473,8 +473,6 @@ class BasePipeline(ABC):
 
             logger.info(f"Resuming MLflow run: {self.resume_run_id}")
             mlflow_context = mlflow.start_run(run_id=self.resume_run_id)
-            # # Optionally, recover last_epoch from MLflow or checkpoint
-            # last_epoch = getattr(self, "last_epoch", 0)
             start_epoch = getattr(self, "last_epoch", 0) + 1
             epochs = start_epoch + epochs
         else:
@@ -485,8 +483,10 @@ class BasePipeline(ABC):
         # ------------------ MLflow CONTEXT ------------------
         with mlflow_context:
             
-            # Log config once per run
-            self._log_config_to_mlflow()
+            # Log config once per run. On resume, avoid re-logging params because
+            # MLflow treats params as immutable and can trigger repeated server errors.
+            if not self.resuming:
+                self._log_config_to_mlflow()
 
             # # Initialize model and loaders
             # self.setup()

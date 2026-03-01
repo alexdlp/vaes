@@ -6,10 +6,10 @@ from typing import Dict, Optional, TYPE_CHECKING
 import torch
 import mlflow
 from pathlib import Path
-from itp_fabadII.logger import logger
+from vaes.logger import logger
 
 if TYPE_CHECKING:
-    from itp_fabadII.pipelines.base_pipeline import BasePipeline
+    from vaes.pipelines.base_pipeline import BasePipeline
 
 
 
@@ -177,7 +177,7 @@ class ModelCheckpoint(MetricCallback):
         if mlflow.active_run():
             mlflow.pytorch.log_model(
                 pipeline.model,
-                artifact_path="best_model"
+                name="best_model",
             )
 
 
@@ -208,8 +208,8 @@ class ModelCheckpoint(MetricCallback):
         try:
             if mlflow.active_run():
                 mlflow.log_artifact(str(ckpt_path), artifact_path="checkpoints")
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning(f"[ModelCheckpoint] Failed to log last checkpoint to MLflow: {e}")
 
         return ckpt_path
 
