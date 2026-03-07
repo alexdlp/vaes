@@ -3,11 +3,11 @@ model:
 
   params:
     in_channels: 1
-    channels_bottleneck: 4
+    latent_channels: 4
 
   experiment:
-    name: "ConvVAE_B${model.params.channels_bottleneck}"
-    run_name: "conv_vae_B${model.params.channels_bottleneck}_${now:%H%M%S}"
+    name: "ConvVAE_B${model.params.latent_channels}"
+    run_name: "conv_vae_B${model.params.latent_channels}_${now:%H%M%S}"
 
 loss:
   name: vae_loss

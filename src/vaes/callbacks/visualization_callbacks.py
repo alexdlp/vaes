@@ -237,7 +237,7 @@ class LatentInterpolationVizCallback(VizBaseCallback):
         was_training = pipeline.model.training
         pipeline.model.eval()
         with torch.no_grad():
-            decoded = pipeline.model.forward_dec(z)
+            decoded = pipeline.model.decoder(z)
         if was_training:
             pipeline.model.train()
 
@@ -292,7 +292,7 @@ class RandomGenerationVizCallback(VizBaseCallback):
         was_training = pipeline.model.training
         pipeline.model.eval()
         with torch.no_grad():
-            decoded = pipeline.model.forward_dec(noise)
+            decoded = pipeline.model.decoder(noise)
         if was_training:
             pipeline.model.train()
 

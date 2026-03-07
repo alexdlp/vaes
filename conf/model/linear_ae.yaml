@@ -2,6 +2,8 @@ model:
   name: linear_ae
 
   params:
+    image_channels: 1
+    image_size: 32
     latent_dim: 2
 
   experiment:
