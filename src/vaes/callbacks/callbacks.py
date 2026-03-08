@@ -177,7 +177,7 @@ class ModelCheckpoint(MetricCallback):
         if mlflow.active_run():
             mlflow.pytorch.log_model(
                 pipeline.model,
-                name="best_model",
+                artifact_path="best_model",
             )
 
 
