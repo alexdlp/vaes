@@ -9,7 +9,7 @@ dependencies = [
     "torchvision",
     "hydra-core",
     "omegaconf",
-    "mlflow",
+    "mlflow==2.22.4",
     "python-dotenv",
     "tqdm",
     "matplotlib",

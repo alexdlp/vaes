@@ -108,7 +108,7 @@ class BasePipeline(ABC):
         self.artifacts_dir.mkdir(parents=True, exist_ok=True)
 
         # Tracking URI
-        mlflow.set_tracking_uri(self.cfg.mlflow.tracking_uri)
+        mlflow.set_tracking_uri(self.cfg.mlflow.artifacts.dir)
 
         # --- Resume logic ---
         # Check for a resume_training argument either at root or inside model

@@ -5,10 +5,10 @@ defaults:
   - _self_
 
 mlflow:
-  tracking_uri: ${oc.env:MLFLOW_TRACKING_URI, file:${oc.env:PROJECT_ROOT}/tracking/metadata}
+  tracking_uri: ${oc.env:MLFLOW_TRACKING_URI, file:${oc.env:PROJECT_ROOT}/artifacts}
 
   artifacts:
-    dir: ${oc.env:PROJECT_ROOT}/tracking/artifacts
+    dir: ${oc.env:PROJECT_ROOT}/artifacts
 
 data:
   train:
@@ -26,7 +26,7 @@ data:
     num_workers: 4
 
 training:
-  epochs: 500
+  epochs: 5000
   random_seed: 47
   device: mps
 
