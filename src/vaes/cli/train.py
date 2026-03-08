@@ -1,11 +1,21 @@
+import sys
+from pathlib import Path
+
+import hydra
 from omegaconf import DictConfig
+
 from vaes.logger import logger
 from vaes.pipelines import create_pipeline
 from vaes.utils import merge_model_section
-from vaes.utils.config_utils import load_environment, parse_args, export_args_to_env, load_hydra_config
+from vaes.utils.config_utils import export_args_to_env, load_environment, parse_args
 
-# @hydra.main(config_path=str(Path(__file__).resolve().parents[3] / "conf"), 
-#             config_name="config", version_base=None)
+
+# Resolve the config directory from this module so the console script can
+# locate the Hydra tree without relying on the current working directory.
+CONF_DIR = str(Path(__file__).resolve().parents[3] / "conf")
+
+
+@hydra.main(config_path=CONF_DIR, config_name="config", version_base="1.3")
 def run_training_pipeline(cfg: DictConfig):
 
     for section in list(cfg.model.keys()):
@@ -23,19 +33,17 @@ def run_training_pipeline(cfg: DictConfig):
 
 
 def main():
-    # 1. Parse CLI args (
-    args, hydra_overrides = parse_args()
+    # 1. Parse external CLI args and preserve Hydra runtime args such as -m.
+    args, hydra_argv = parse_args()
 
-    # 2. Export CLI args to env 
+    # 2. Export CLI args to env.
     export_args_to_env(args)
 
-    # 3. Load .env environment
+    # 3. Load .env before Hydra composes the config tree.
     load_environment()
 
-    # 4. Launch Hydra pipeline
-    cfg = load_hydra_config(hydra_overrides=hydra_overrides) 
-    run_training_pipeline(cfg=cfg)
-  
+    # 4. Leave only Hydra runtime args on sys.argv so Hydra can parse them normally.
+    sys.argv = [sys.argv[0], *hydra_argv]
 
- 
-
+    # 5. Launch Hydra pipeline.
+    run_training_pipeline()

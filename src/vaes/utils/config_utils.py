@@ -1,6 +1,6 @@
 
 from omegaconf import DictConfig, OmegaConf, open_dict
-from hydra import compose, initialize
+from hydra import compose, initialize_config_dir
 from omegaconf import DictConfig
 import warnings
 from typing import List, Optional
@@ -135,10 +135,10 @@ def load_hydra_config(hydra_overrides: List[str]) -> DictConfig:
       - Base config: config/config.yaml (and its includes)
       - Additional CLI overrides passed through (e.g., data.* = ...)
     """
-    abs_conf_dir = Path(__file__).resolve().parents[3] / "conf"
-    rel_conf_dir = os.path.relpath(abs_conf_dir, start=Path(__file__).resolve().parent)
-
-    with initialize(version_base="1.3", config_path=str(rel_conf_dir)):
+    conf_dir = Path(__file__).resolve().parents[3] / "conf"
+    #rel_conf_dir = os.path.relpath(conf_dir, start=Path(__file__).resolve().parent)
+    #with initialize(version_base="1.3", config_path=str(rel_conf_dir)):
+    with initialize_config_dir(version_base="1.3", config_dir=str(conf_dir)):
         cfg = compose(config_name="config", overrides=[*hydra_overrides])
 
     return cfg
@@ -198,12 +198,13 @@ def load_environment(args: Optional[argparse.Namespace] = None) -> None:
             logger.warning(f"Failed to export CLI args to environment: {e}")
 
 
-def parse_args() -> argparse.Namespace:
+def parse_args(argv: Optional[List[str]] = None) -> tuple[argparse.Namespace, List[str]]:
     """
     Parse external CLI arguments that must remain independent from Hydra.
     
     Returns:
-        argparse.Namespace: Parsed command-line arguments.
+        tuple[argparse.Namespace, List[str]]: Parsed external arguments and
+        the remaining argv that Hydra should consume.
     """
     parser = argparse.ArgumentParser(
         description="CLI flags for external runtime behavior."
@@ -223,7 +224,7 @@ def parse_args() -> argparse.Namespace:
         help="MLflow run ID to resume training from."
     )
 
-    args, unknown = parser.parse_known_args()
+    args, unknown = parser.parse_known_args(args=argv)
     return args, unknown
 
 
