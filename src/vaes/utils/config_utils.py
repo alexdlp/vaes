@@ -136,10 +136,10 @@ def load_hydra_config(hydra_overrides: List[str]) -> DictConfig:
       - Additional CLI overrides passed through (e.g., data.* = ...)
     """
     conf_dir = Path(__file__).resolve().parents[3] / "conf"
-    #rel_conf_dir = os.path.relpath(conf_dir, start=Path(__file__).resolve().parent)
-    #with initialize(version_base="1.3", config_path=str(rel_conf_dir)):
+    normalized_overrides = normalize_hydra_overrides(hydra_overrides)
+
     with initialize_config_dir(version_base="1.3", config_dir=str(conf_dir)):
-        cfg = compose(config_name="config", overrides=[*hydra_overrides])
+        cfg = compose(config_name="config", overrides=[*normalized_overrides])
 
     return cfg
 
@@ -226,6 +226,51 @@ def parse_args(argv: Optional[List[str]] = None) -> tuple[argparse.Namespace, Li
 
     args, unknown = parser.parse_known_args(args=argv)
     return args, unknown
+
+
+def normalize_hydra_overrides(hydra_overrides: List[str]) -> List[str]:
+    """
+    Normalize user-facing Hydra overrides to the staged layout used by the
+    selected model configs before `merge_model_section()` flattens them.
+
+    This keeps the CLI surface aligned with the final runtime config:
+      - `model.params.*`      -> `model.model.params.*`
+      - `model.experiment.*`  -> `model.model.experiment.*`
+      - `model.name=...`      -> `model.model.name=...`
+
+    Group selection overrides such as `model=linear_ae` are left untouched.
+    Non-override Hydra args (`-m`, `--cfg`, `--info`, etc.) also pass through
+    unchanged.
+    """
+    normalized: List[str] = []
+
+    for token in hydra_overrides:
+        key, separator, value = token.partition("=")
+
+        # Hydra runtime arguments are not config overrides and must pass through
+        # untouched so Hydra can parse them itself.
+        if separator == "":
+            normalized.append(token)
+            continue
+
+        op = ""
+        raw_key = key
+        for candidate in ("++", "+", "~"):
+            if raw_key.startswith(candidate):
+                op = candidate
+                raw_key = raw_key[len(candidate):]
+                break
+
+        if raw_key == "model.name":
+            raw_key = "model.model.name"
+        elif raw_key.startswith("model.params."):
+            raw_key = "model.model." + raw_key[len("model."):]
+        elif raw_key.startswith("model.experiment."):
+            raw_key = "model.model." + raw_key[len("model."):]
+
+        normalized.append(f"{op}{raw_key}{separator}{value}")
+
+    return normalized
 
 
 def export_args_to_env(args: argparse.Namespace) -> None:

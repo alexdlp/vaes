@@ -7,7 +7,7 @@ from omegaconf import DictConfig
 from vaes.logger import logger
 from vaes.pipelines import create_pipeline
 from vaes.utils import merge_model_section
-from vaes.utils.config_utils import export_args_to_env, load_environment, parse_args
+from vaes.utils.config_utils import export_args_to_env, load_environment, normalize_hydra_overrides, parse_args
 
 
 # Resolve the config directory from this module so the console script can
@@ -42,8 +42,11 @@ def main():
     # 3. Load .env before Hydra composes the config tree.
     load_environment()
 
-    # 4. Leave only Hydra runtime args on sys.argv so Hydra can parse them normally.
+    # 4. Normalize user-facing model overrides to the staged Hydra layout.
+    hydra_argv = normalize_hydra_overrides(hydra_argv)
+
+    # 5. Leave only Hydra runtime args on sys.argv so Hydra can parse them normally.
     sys.argv = [sys.argv[0], *hydra_argv]
 
-    # 5. Launch Hydra pipeline.
+    # 6. Launch Hydra pipeline.
     run_training_pipeline()
