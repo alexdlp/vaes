@@ -5,4 +5,5 @@ from .visualization_callbacks import (
     LatentSpaceVizCallback,
     LatentInterpolationVizCallback,
     RandomGenerationVizCallback,
+    FlowDensityVizCallback,
 )

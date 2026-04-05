@@ -1,0 +1,56 @@
+model:
+  name: planar_flows
+
+  params:
+    dims: 2
+    K: 2
+
+  experiment:
+    name: "Planer_Flows_K${model.params.K}"
+    run_name: "planar_flows_K${model.params.K}_D${model.params.dims}_${now:%H%M%S}"
+
+data:
+  train:
+    distribution:
+      _target_: torch.distributions.Normal
+      loc: 0.0
+      scale: 1.0
+    n_samples: 1e6
+    dims: ${model.params.dims}
+    batch_size: 4096
+    num_workers: 4
+  val:
+    distribution:
+      _target_: torch.distributions.Normal
+      loc: 0.0
+      scale: 1.0
+    n_samples: 1e3
+    dims: ${model.params.dims}
+    batch_size: 4096
+    num_workers: 4
+
+
+loss:
+  energy_fn: vaes.utils.energy_functions.U1
+
+callbacks:
+  early_stopping:
+    patience: 30
+    monitor: val_loss
+    mode: min
+    min_delta: 1e-6
+    start_from_epoch: 50
+
+  model_checkpoint:
+    monitor: val_loss
+    mode: min
+    min_delta: 1e-3
+    start_from_epoch: 100
+
+  flow_density_viz:
+    plot_every_n_epochs: 5
+    lims: [[-4, 4], [-4, 4]]
+    nb_points: 1000
+    cmap: coolwarm
+    prefix: flow_density
+

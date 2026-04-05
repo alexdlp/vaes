@@ -1,7 +1,4 @@
-from __future__ import annotations
-
 import math
-
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.figure import Figure
@@ -115,6 +112,44 @@ def plot_latent_interpolation_grid(images: np.ndarray, grid_size: int) -> Figure
             idx += 1
 
     fig.suptitle("Latent Space Interpolation", fontsize=12)
+    fig.tight_layout()
+    return fig
+
+
+def plot_density_meshgrid(
+    x: np.ndarray,
+    y: np.ndarray,
+    density: np.ndarray,
+    lims: np.ndarray,
+    cmap: str = "coolwarm",
+    title: str = "Density",
+) -> Figure:
+    """
+    Plot a precomputed 2D density over a meshgrid.
+
+    Works for both regular grids (target density) and deformed grids
+    (flow-transformed density), since pcolormesh uses the actual coordinates.
+
+    Args:
+        x:       x-coordinates of the grid, shape (nb_points, nb_points).
+        y:       y-coordinates of the grid, shape (nb_points, nb_points).
+        density: Density values on the grid, shape (nb_points, nb_points).
+        lims:    Plot boundaries [[x_min, x_max], [y_min, y_max]].
+        cmap:    Matplotlib colormap.
+        title:   Figure title.
+
+    Returns:
+        Matplotlib figure.
+    """
+    cmap_obj = plt.get_cmap(cmap)
+    fig, ax = plt.subplots()
+    ax.set_facecolor(cmap_obj(0.0))
+    ax.pcolormesh(x, y, density, cmap=cmap, rasterized=True)
+    ax.set_xlim(*lims[0])
+    ax.set_ylim(*lims[1])
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_title(title, fontsize=14)
     fig.tight_layout()
     return fig
 
