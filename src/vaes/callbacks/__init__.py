@@ -1,9 +1,9 @@
 from .callbacks import Callback, ModelCheckpoint, EarlyStopping
 from .viz_base_callback import VizBaseCallback
-from .visualization_callbacks import (
+from .vae_visualization_callbacks import (
     ReconstructionVizCallback,
     LatentSpaceVizCallback,
     LatentInterpolationVizCallback,
     RandomGenerationVizCallback,
-    FlowDensityVizCallback,
 )
+from .flow_visualization_callbacks import FlowDensityVizCallback
