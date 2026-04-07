@@ -2,7 +2,7 @@
 ### PHONY declarations
 ### ------------------------------
 .PHONY: \
-  run_mlflow stop_mlflow status_mlflow \
+  run_mlflow stop_mlflow status_mlflow clean_mlflow \
 
 
 ### ------------------------------
@@ -17,6 +17,9 @@ stop_mlflow:
 status_mlflow:
 	tmux has-session -t mlflow_ui && echo "MLflow UI is running." || echo "MLflow UI \
 	is not running."
+
+clean_mlflow:
+	uv run mlflow gc --backend-store-uri file:$(CURDIR)/artifacts
 
 ### ------------------------------
 ### Make all sh files in tools executable
