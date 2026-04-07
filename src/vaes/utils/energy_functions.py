@@ -93,4 +93,4 @@ def U4(z: torch.Tensor) -> torch.Tensor:
 
 
 # Convenience mapping from index to function, matching Table 1 of the paper
-ENERGY_FUNCTIONS = {1: U1, 2: U2, 3: U3, 4: U4}
+ENERGY_FUNCTIONS = {"U1": U1, "U2": U2, "U3": U3, "U4": U4}

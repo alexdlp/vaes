@@ -30,8 +30,8 @@ data:
     num_workers: 4
 
 
-loss:
-  energy_fn: vaes.utils.energy_functions.U1
+target:
+  energy_fn: U1
 
 callbacks:
   early_stopping:
@@ -50,7 +50,8 @@ callbacks:
   flow_density_viz:
     plot_every_n_epochs: 5
     lims: [[-4, 4], [-4, 4]]
-    nb_points: 1000
+    nb_points_target: 100
+    nb_points_flow: 1000
     cmap: coolwarm
     prefix: flow_density
 

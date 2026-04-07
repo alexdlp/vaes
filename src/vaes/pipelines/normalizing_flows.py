@@ -2,13 +2,14 @@ from typing import Any, Dict, Tuple
 from torch.utils.data import DataLoader
 import torch
 import torch.nn as nn
-from hydra.utils import instantiate, get_method
+from hydra.utils import instantiate
 from vaes.pipelines import register_pipeline
 from vaes.pipelines.base_pipeline import BasePipeline, Callback
 from vaes.dataloaders import DistributionDataLoader
 from vaes.models import NormalizingFlow
 from vaes.utils.config_utils import ConfigNamespace
 from vaes.losses.kl_loss import KLDivergenceFlowMC
+from vaes.utils.energy_functions import ENERGY_FUNCTIONS
 from vaes.callbacks import (
     EarlyStopping,
     FlowDensityVizCallback,
@@ -46,7 +47,8 @@ class NormalizingFlowsPipeline(BasePipeline):
         return NormalizingFlow(**self.cfg.model.params)
     
     def build_loss(self):
-        self.energy_fn = get_method(self.cfg.loss.energy_fn)
+        name = self.cfg.target.energy_fn           # e.g. "U1"
+        self.energy_fn = ENERGY_FUNCTIONS[name]
         base_dist = instantiate(ConfigNamespace.to_builtin(self.cfg.data.train.distribution))
         return KLDivergenceFlowMC(log_prob_fn = lambda z: -self.energy_fn(z),
                                   base_dist = base_dist)
